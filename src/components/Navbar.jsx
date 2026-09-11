@@ -1,5 +1,5 @@
-import React, { useRef } from 'react'
-import { CheckSquare, Plus, Sun, Moon, Download, Upload, RotateCcw, MoreHorizontal, Sparkles } from 'lucide-react'
+import React, { useRef, useState, useEffect } from 'react'
+import { CheckSquare, Plus, Sun, Moon, Download, Upload, RotateCcw, MoreHorizontal, DownloadCloud, Smartphone } from 'lucide-react'
 import { Button } from './ui/button'
 import {
   DropdownMenu,
@@ -12,6 +12,44 @@ import {
 
 export function Navbar({ onOpenNewTask, isDark, toggleTheme, onExport, onImport, onReset, stats }) {
   const fileInputRef = useRef(null)
+  const [deferredPrompt, setDeferredPrompt] = useState(null)
+  const [isInstalled, setIsInstalled] = useState(false)
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault()
+      setDeferredPrompt(e)
+    }
+
+    const handleAppInstalled = () => {
+      setIsInstalled(true)
+      setDeferredPrompt(null)
+    }
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    window.addEventListener('appinstalled', handleAppInstalled)
+
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsInstalled(true)
+    }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      window.removeEventListener('appinstalled', handleAppInstalled)
+    }
+  }, [])
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt()
+      const { outcome } = await deferredPrompt.userChoice
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null)
+      }
+    } else {
+      alert('To install the app on your desktop or phone:\n\n1. In Chrome/Edge: Click the install icon (⊕) in the browser URL address bar.\n2. Or click the 3-dots menu > "Install TaskFlow".')
+    }
+  }
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0]
@@ -35,7 +73,7 @@ export function Navbar({ onOpenNewTask, isDark, toggleTheme, onExport, onImport,
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-white/5 bg-white/75 dark:bg-slate-950/75 backdrop-blur-xl transition-colors duration-200">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-        {/* Modern Brand Logo & Title */}
+        {/* Brand Logo & Title */}
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
             <CheckSquare className="h-5 w-5 stroke-[2.5]" />
@@ -46,7 +84,7 @@ export function Navbar({ onOpenNewTask, isDark, toggleTheme, onExport, onImport,
                 TaskFlow
               </span>
               <span className="hidden sm:inline-flex text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800/50">
-                v2.0
+                PWA
               </span>
             </div>
           </div>
@@ -54,11 +92,25 @@ export function Navbar({ onOpenNewTask, isDark, toggleTheme, onExport, onImport,
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
-          {/* Quick stats mini capsule */}
+          {/* Install App / Open in App Button */}
+          {!isInstalled && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleInstallClick}
+              className="h-9 px-3 rounded-xl gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 border-indigo-200/60 dark:border-indigo-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/50"
+              title="Install TaskFlow as Desktop or Mobile App"
+            >
+              <Smartphone className="h-3.5 w-3.5" />
+              <span>Install App</span>
+            </Button>
+          )}
+
+          {/* Quick stats capsule */}
           {stats.total > 0 && (
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200/70 dark:border-white/5 text-xs font-semibold">
-              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-slate-700 dark:text-slate-300">{stats.completed}/{stats.total} Done</span>
+              <span className="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+              <span className="text-slate-700 dark:text-slate-300">{stats.completed}/{stats.total}</span>
               <span className="text-slate-300 dark:text-slate-700">•</span>
               <span className="text-indigo-600 dark:text-indigo-400 font-mono">{stats.completionRate}%</span>
             </div>
@@ -106,9 +158,9 @@ export function Navbar({ onOpenNewTask, isDark, toggleTheme, onExport, onImport,
             title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
             {isDark ? (
-              <Sun className="h-4 w-4 text-amber-400 transition-transform duration-200 rotate-0 hover:rotate-45" />
+              <Sun className="h-4 w-4 text-amber-400 transition-transform duration-200" />
             ) : (
-              <Moon className="h-4 w-4 text-slate-700 transition-transform duration-200 rotate-0 hover:-rotate-12" />
+              <Moon className="h-4 w-4 text-slate-700 transition-transform duration-200" />
             )}
           </Button>
 
