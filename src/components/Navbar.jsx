@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { CheckSquare, Plus, Sun, Moon, Download, Upload, RotateCcw, MoreHorizontal, DownloadCloud, Smartphone } from 'lucide-react'
+import { CheckSquare, Plus, Sun, Moon, Download, Upload, RotateCcw, MoreHorizontal, Smartphone } from 'lucide-react'
 import { Button } from './ui/button'
 import {
   DropdownMenu,
@@ -47,7 +47,7 @@ export function Navbar({ onOpenNewTask, isDark, toggleTheme, onExport, onImport,
         setDeferredPrompt(null)
       }
     } else {
-      alert('To install the app on your desktop or phone:\n\n1. In Chrome/Edge: Click the install icon (⊕) in the browser URL address bar.\n2. Or click the 3-dots menu > "Install TaskFlow".')
+      alert('To install TaskFlow:\n\n• On Chrome / Android: Tap the 3-dots menu > "Install app" or "Add to Home screen".\n• On iPhone Safari: Tap the Share button > "Add to Home Screen".')
     }
   }
 
@@ -71,71 +71,70 @@ export function Navbar({ onOpenNewTask, isDark, toggleTheme, onExport, onImport,
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-white/5 bg-white/75 dark:bg-slate-950/75 backdrop-blur-xl transition-colors duration-200">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-        {/* Brand Logo & Title */}
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-            <CheckSquare className="h-5 w-5 stroke-[2.5]" />
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md">
+      <div className="w-full max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
+        {/* Brand */}
+        <div className="flex items-center gap-2.5">
+          <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs">
+            <CheckSquare className="h-4.5 w-4.5 stroke-[2.5]" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold text-base sm:text-lg tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent dark:from-indigo-400 dark:via-purple-300 dark:to-pink-400">
-                TaskFlow
-              </span>
-              <span className="hidden sm:inline-flex text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800/50">
-                PWA
-              </span>
-            </div>
+            <span className="font-bold text-base tracking-tight text-slate-900 dark:text-slate-100">
+              TaskFlow
+            </span>
           </div>
         </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-2">
-          {/* Install App / Open in App Button */}
+        {/* Action Controls */}
+        <div className="flex items-center gap-1.5">
+          {/* Install App Button if not installed */}
           {!isInstalled && (
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={handleInstallClick}
-              className="h-9 px-3 rounded-xl gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 border-indigo-200/60 dark:border-indigo-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/50"
-              title="Install TaskFlow as Desktop or Mobile App"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 active:scale-95 transition-transform cursor-pointer"
             >
               <Smartphone className="h-3.5 w-3.5" />
-              <span>Install App</span>
-            </Button>
+              <span>Install</span>
+            </button>
           )}
 
-          {/* Quick stats capsule */}
-          {stats.total > 0 && (
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200/70 dark:border-white/5 text-xs font-semibold">
-              <span className="flex h-2 w-2 rounded-full bg-emerald-500"></span>
-              <span className="text-slate-700 dark:text-slate-300">{stats.completed}/{stats.total}</span>
-              <span className="text-slate-300 dark:text-slate-700">•</span>
-              <span className="text-indigo-600 dark:text-indigo-400 font-mono">{stats.completionRate}%</span>
-            </div>
-          )}
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            aria-label="Toggle Theme"
+          >
+            {isDark ? (
+              <Sun className="h-4.5 w-4.5 text-amber-400" />
+            ) : (
+              <Moon className="h-4.5 w-4.5 text-slate-700" />
+            )}
+          </button>
 
-          {/* Options Dropdown */}
+          {/* Backup Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
+              <button
+                className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                aria-label="More options"
+              >
+                <MoreHorizontal className="h-4.5 w-4.5" />
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
-              <DropdownMenuLabel>Data & Backup</DropdownMenuLabel>
-              <DropdownMenuItem onClick={onExport} className="gap-2 text-xs">
-                <Download className="h-3.5 w-3.5 text-slate-400" />
+              <DropdownMenuLabel>Options</DropdownMenuLabel>
+              <DropdownMenuItem onClick={onExport} className="gap-2 text-xs py-2">
+                <Download className="h-4 w-4 text-slate-400" />
                 <span>Export JSON Backup</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => fileInputRef.current?.click()} className="gap-2 text-xs">
-                <Upload className="h-3.5 w-3.5 text-slate-400" />
+              <DropdownMenuItem onClick={() => fileInputRef.current?.click()} className="gap-2 text-xs py-2">
+                <Upload className="h-4 w-4 text-slate-400" />
                 <span>Import JSON Backup</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={onReset} className="gap-2 text-xs text-rose-600 dark:text-rose-400">
-                <RotateCcw className="h-3.5 w-3.5" />
+              <DropdownMenuItem onClick={onReset} className="gap-2 text-xs py-2 text-rose-600 dark:text-rose-400">
+                <RotateCcw className="h-4 w-4" />
                 <span>Clear All Tasks</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -149,30 +148,14 @@ export function Navbar({ onOpenNewTask, isDark, toggleTheme, onExport, onImport,
             className="hidden"
           />
 
-          {/* Theme Toggle Button */}
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={toggleTheme}
-            className="h-9 w-9 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
-            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          >
-            {isDark ? (
-              <Sun className="h-4 w-4 text-amber-400 transition-transform duration-200" />
-            ) : (
-              <Moon className="h-4 w-4 text-slate-700 transition-transform duration-200" />
-            )}
-          </Button>
-
-          {/* New Task Button */}
+          {/* New Task Trigger Button */}
           <Button
             onClick={onOpenNewTask}
             size="sm"
-            className="h-9 px-3.5 sm:px-4 gap-1.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-500/20"
+            className="h-8 px-3 rounded-lg gap-1 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs"
           >
-            <Plus className="h-4 w-4 stroke-[2.5]" />
-            <span className="hidden sm:inline">New Task</span>
-            <kbd className="hidden sm:inline-block ml-1 text-[10px] bg-indigo-700/60 px-1.5 py-0.5 rounded-md text-white font-mono">N</kbd>
+            <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
+            <span>New Task</span>
           </Button>
         </div>
       </div>

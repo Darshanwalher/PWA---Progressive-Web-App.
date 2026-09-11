@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import {
-  MoreVertical,
+  MoreHorizontal,
   Edit2,
   Trash2,
   Copy,
@@ -9,19 +9,9 @@ import {
   ChevronRight,
   Plus,
   Calendar,
-  AlertCircle,
-  CheckCircle,
-  Briefcase,
-  User,
-  Heart,
-  BookOpen,
-  DollarSign,
-  ListTodo,
 } from 'lucide-react'
 import { Checkbox } from './ui/checkbox'
-import { Badge } from './ui/badge'
 import { Button } from './ui/button'
-import { Progress } from './ui/progress'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,14 +20,6 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
 import { CATEGORIES, PRIORITIES } from '../data/initialTodos'
-
-const categoryIcons = {
-  work: Briefcase,
-  personal: User,
-  health: Heart,
-  learning: BookOpen,
-  finance: DollarSign,
-}
 
 export function TaskItem({
   todo,
@@ -56,11 +38,9 @@ export function TaskItem({
 
   const priorityObj = PRIORITIES.find((p) => p.id === todo.priority) || PRIORITIES[2]
   const categoryObj = CATEGORIES.find((c) => c.id === todo.category) || CATEGORIES[0]
-  const CategoryIcon = categoryIcons[todo.category] || Briefcase
 
   const subtasks = todo.subtasks || []
   const completedSubtasks = subtasks.filter((st) => st.completed).length
-  const subtasksProgress = subtasks.length > 0 ? Math.round((completedSubtasks / subtasks.length) * 100) : 0
 
   const todayStr = new Date().toISOString().split('T')[0]
   const tomorrowStr = new Date(Date.now() + 86400000).toISOString().split('T')[0]
@@ -100,65 +80,59 @@ export function TaskItem({
 
   return (
     <div
-      className={`group relative rounded-2xl border transition-all duration-200 modern-card p-4 ${
+      className={`group relative rounded-xl border transition-colors p-3 sm:p-3.5 pro-card ${
         todo.completed
-          ? 'bg-slate-50/50 dark:bg-slate-900/30 border-slate-200/50 dark:border-white/5 opacity-60'
-          : 'bg-white/80 dark:bg-slate-900/70 border-slate-200/80 dark:border-white/10 hover:border-indigo-300 dark:hover:border-indigo-500/40 backdrop-blur-md'
+          ? 'bg-slate-50/50 dark:bg-slate-900/30 border-slate-200/60 dark:border-slate-800/40 opacity-60'
+          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-2xs'
       }`}
     >
-      {/* Pinned visual accent line */}
-      {todo.pinned && (
-        <div className="absolute top-0 left-6 right-6 h-[2px] bg-gradient-to-r from-amber-400 to-orange-500 rounded-full" />
-      )}
-
-      <div className="flex items-start gap-3.5">
-        {/* Modern Checkbox */}
-        <div className="pt-0.5">
+      <div className="flex items-start gap-2.5 sm:gap-3">
+        {/* Checkbox */}
+        <div className="pt-0.5 shrink-0">
           <Checkbox
             checked={todo.completed}
             onCheckedChange={() => onToggle(todo.id)}
-            className="h-5 w-5 rounded-lg border-slate-300 dark:border-slate-700 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600 transition-transform active:scale-90"
           />
         </div>
 
         {/* Task Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-start justify-between gap-1.5">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <span
                   onClick={() => onToggle(todo.id)}
-                  className={`text-sm sm:text-base font-semibold leading-snug cursor-pointer select-none transition-all ${
+                  className={`text-xs sm:text-sm font-medium leading-snug cursor-pointer select-none transition-colors break-words ${
                     todo.completed
                       ? 'line-through text-slate-400 dark:text-slate-500'
-                      : 'text-slate-900 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400'
+                      : 'text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400'
                   }`}
                 >
                   {todo.title}
                 </span>
 
                 {todo.pinned && (
-                  <Pin className="h-3.5 w-3.5 text-amber-500 fill-amber-500 shrink-0" />
+                  <Pin className="h-3 w-3 text-amber-500 fill-amber-500 shrink-0" />
                 )}
               </div>
 
-              {/* Description preview */}
+              {/* Description */}
               {todo.description && (
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2 break-words">
                   {todo.description}
                 </p>
               )}
             </div>
 
-            {/* Quick Actions Menu */}
-            <div className="flex items-center gap-1 shrink-0">
+            {/* Actions Menu */}
+            <div className="flex items-center gap-0.5 shrink-0">
               <button
                 onClick={() => onTogglePin(todo.id)}
                 title={todo.pinned ? "Unpin task" : "Pin task"}
-                className={`p-1 rounded-lg transition-colors cursor-pointer ${
+                className={`p-1 rounded-md transition-colors cursor-pointer ${
                   todo.pinned
                     ? 'text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/40'
-                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 opacity-0 group-hover:opacity-100'
+                    : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 opacity-80 sm:opacity-0 sm:group-hover:opacity-100'
                 }`}
               >
                 <Pin className={`h-3.5 w-3.5 ${todo.pinned ? 'fill-current' : ''}`} />
@@ -169,14 +143,14 @@ export function TaskItem({
                   <Button
                     variant="ghost"
                     size="iconSm"
-                    className="h-7 w-7 text-slate-400 opacity-0 group-hover:opacity-100 hover:text-slate-700 dark:hover:text-slate-200 transition-opacity rounded-lg"
+                    className="h-7 w-7 text-slate-400 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 hover:text-slate-700 dark:hover:text-slate-200 transition-opacity"
                   >
-                    <MoreVertical className="h-3.5 w-3.5" />
+                    <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-44 rounded-xl">
+                <DropdownMenuContent align="end" className="w-40">
                   <DropdownMenuItem onClick={() => onEdit(todo)} className="text-xs gap-2">
-                    <Edit2 className="h-3.5 w-3.5 text-slate-400" /> Edit Task
+                    <Edit2 className="h-3.5 w-3.5 text-slate-400" /> Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => { setShowAddSubtaskInput(true); setIsExpanded(true); }} className="text-xs gap-2">
                     <Plus className="h-3.5 w-3.5 text-slate-400" /> Add Subtask
@@ -193,48 +167,43 @@ export function TaskItem({
             </div>
           </div>
 
-          {/* Badges / Meta Info Row */}
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-            {/* Priority Pill */}
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
-              todo.priority === 'urgent'
-                ? 'bg-rose-50 text-rose-700 border-rose-200/80 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-900/60 shadow-xs'
-                : todo.priority === 'high'
-                ? 'bg-amber-50 text-amber-700 border-amber-200/80 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-900/60'
-                : todo.priority === 'low'
-                ? 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800/80 dark:text-slate-400 dark:border-slate-700'
-                : 'bg-indigo-50 text-indigo-700 border-indigo-200/80 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-indigo-900/60'
-            }`}>
-              <span className={`h-1.5 w-1.5 rounded-full ${
-                todo.priority === 'urgent' ? 'bg-rose-500 animate-pulse' :
-                todo.priority === 'high' ? 'bg-amber-500' :
-                todo.priority === 'low' ? 'bg-slate-400' : 'bg-indigo-500'
-              }`} />
-              <span>{priorityObj.label}</span>
-            </span>
+          {/* Badges / Meta Info */}
+          <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px]">
+            {/* Priority */}
+            {todo.priority && todo.priority !== 'medium' && (
+              <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium ${
+                todo.priority === 'urgent'
+                  ? 'bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300'
+                  : todo.priority === 'high'
+                  ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
+                  : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+              }`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${
+                  todo.priority === 'urgent' ? 'bg-red-500' :
+                  todo.priority === 'high' ? 'bg-amber-500' : 'bg-slate-400'
+                }`} />
+                <span>{priorityObj.label}</span>
+              </span>
+            )}
 
-            {/* Category Pill */}
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-white/5">
-              <CategoryIcon className="h-3 w-3 text-slate-500 dark:text-slate-400" />
-              <span>{categoryObj.label}</span>
-            </span>
+            {/* Category */}
+            {todo.category && (
+              <span className="px-1.5 py-0.5 rounded text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                {categoryObj.label}
+              </span>
+            )}
 
-            {/* Due Date Indicator */}
+            {/* Due Date */}
             {todo.dueDate && (
               <span
-                className={`inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full font-medium border ${
+                className={`inline-flex items-center gap-1 text-[11px] px-1.5 py-0.5 rounded ${
                   isOverdue
-                    ? 'text-rose-600 dark:text-rose-400 font-semibold bg-rose-50/80 dark:bg-rose-950/50 border-rose-200 dark:border-rose-900/60 shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-800/60 border-slate-200/60 dark:border-white/5'
+                    ? 'text-red-600 dark:text-red-400 font-semibold bg-red-50 dark:bg-red-950/50'
+                    : 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800'
                 }`}
               >
-                {isOverdue ? (
-                  <AlertCircle className="h-3 w-3" />
-                ) : (
-                  <Calendar className="h-3 w-3" />
-                )}
+                <Calendar className="h-3 w-3" />
                 <span>{dateLabel}</span>
-                {isOverdue && <span className="font-bold text-[10px] uppercase">(Overdue)</span>}
               </span>
             )}
 
@@ -242,7 +211,7 @@ export function TaskItem({
             {todo.tags?.map((tag) => (
               <span
                 key={tag}
-                className="text-slate-500 dark:text-slate-400 font-mono text-[11px] bg-slate-100/70 dark:bg-slate-800/60 px-2 py-0.5 rounded-md"
+                className="text-slate-400 dark:text-slate-500 font-mono text-[11px]"
               >
                 #{tag}
               </span>
@@ -252,9 +221,8 @@ export function TaskItem({
             {subtasks.length > 0 && (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="ml-auto inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                className="ml-auto inline-flex items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 text-[11px] font-mono cursor-pointer"
               >
-                <ListTodo className="h-3 w-3 text-indigo-500" />
                 <span>
                   {completedSubtasks}/{subtasks.length}
                 </span>
@@ -267,75 +235,54 @@ export function TaskItem({
             )}
           </div>
 
-          {/* Subtasks Expandable Content */}
+          {/* Subtasks List */}
           {isExpanded && subtasks.length > 0 && (
-            <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-white/5 space-y-2">
-              {/* Mini progress bar */}
-              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                <span className="font-medium text-[11px]">Checklist Progress:</span>
-                <div className="flex-1">
-                  <Progress value={subtasksProgress} className="h-1.5" />
-                </div>
-                <span className="font-mono text-[11px] font-semibold">{subtasksProgress}%</span>
-              </div>
-
-              {/* Subtask list */}
-              <div className="space-y-1 pl-1">
-                {subtasks.map((st) => (
-                  <div
-                    key={st.id}
-                    className="flex items-center justify-between gap-2 py-1 px-2 rounded-lg hover:bg-slate-100/60 dark:hover:bg-slate-800/40 transition-colors group/sub"
-                  >
-                    <label className="flex items-center gap-2 cursor-pointer flex-1 min-w-0">
-                      <Checkbox
-                        checked={st.completed}
-                        onCheckedChange={() => onToggleSubtask(todo.id, st.id)}
-                        className="h-3.5 w-3.5 rounded"
-                      />
-                      <span
-                        className={`truncate text-xs transition-colors ${
-                          st.completed
-                            ? 'line-through text-slate-400 dark:text-slate-500'
-                            : 'text-slate-700 dark:text-slate-300 font-medium'
-                        }`}
-                      >
-                        {st.title}
-                      </span>
-                    </label>
-                    <button
-                      onClick={() => onDeleteSubtask(todo.id, st.id)}
-                      className="text-slate-400 hover:text-rose-500 opacity-0 group-hover/sub:opacity-100 transition-opacity p-0.5 cursor-pointer"
+            <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1">
+              {subtasks.map((st) => (
+                <div
+                  key={st.id}
+                  className="flex items-center justify-between gap-2 py-1 text-xs"
+                >
+                  <label className="flex items-center gap-2 cursor-pointer flex-1 min-w-0">
+                    <Checkbox
+                      checked={st.completed}
+                      onCheckedChange={() => onToggleSubtask(todo.id, st.id)}
+                      className="h-3.5 w-3.5 shrink-0"
+                    />
+                    <span
+                      className={`truncate text-xs ${
+                        st.completed
+                          ? 'line-through text-slate-400 dark:text-slate-500'
+                          : 'text-slate-700 dark:text-slate-300'
+                      }`}
                     >
-                      <Trash2 className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+                      {st.title}
+                    </span>
+                  </label>
+                  <button
+                    onClick={() => onDeleteSubtask(todo.id, st.id)}
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
             </div>
           )}
 
-          {/* Inline Add Subtask Input */}
+          {/* Inline Add Subtask */}
           {showAddSubtaskInput && (
-            <form onSubmit={handleCreateSubtask} className="mt-2.5 flex items-center gap-2">
+            <form onSubmit={handleCreateSubtask} className="mt-2 flex items-center gap-1.5">
               <input
                 type="text"
-                placeholder="Enter subtask title..."
+                placeholder="Subtask title..."
                 value={newSubtaskText}
                 onChange={(e) => setNewSubtaskText(e.target.value)}
                 autoFocus
-                className="flex-1 h-8 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900 px-2.5 outline-none focus:ring-2 focus:ring-indigo-500/30"
+                className="flex-1 h-8 text-xs rounded border border-slate-200 dark:border-slate-700 bg-transparent px-2 outline-none focus:border-blue-500"
               />
-              <Button type="submit" size="sm" className="h-8 text-xs px-3">
+              <Button type="submit" size="sm" className="h-8 text-xs px-2.5">
                 Add
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowAddSubtaskInput(false)}
-                className="h-8 text-xs px-2"
-              >
-                Cancel
               </Button>
             </form>
           )}
